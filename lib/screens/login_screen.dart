@@ -1,223 +1,128 @@
-// Archivo: login_screen - Proyecto Gestión de Alumnos.
+import 'package:flutter/cupertino.dart';
 
-import 'package:flutter/material.dart';
-
+import '../widgets/ios_components.dart';
 import '../theme/app_theme.dart';
+import '../utils/validators.dart';
 
-/// Pantalla de inicio de sesión de Gestión de Alumnos.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  // Permite validar todos los campos del formulario.
-  final _formKey = GlobalKey<FormState>();
-
-  // Controladores para obtener los valores ingresados.
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  // Controla si la contraseña permanece oculta.
-  bool _obscurePassword = true;
-
+  final _form = GlobalKey<FormState>();
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  bool _hidden = true;
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    _email.dispose();
+    _password.dispose();
     super.dispose();
   }
 
-  /// Comprueba los campos antes de continuar.
-
-  void _iniciarSesion() {
+  void _login() {
     FocusScope.of(context).unfocus();
-
-    // Verifica que el formulario tenga datos válidos.
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inicio de sesión simulado correctamente'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
-      );
-
-      // Navega al menú y reemplaza la pantalla Login.
+    if (_form.currentState!.validate()) {
       Navigator.pushReplacementNamed(context, '/menu');
-
-      // Posteriormente navegaremos a MenuScreen.
     }
   }
 
-  /// Muestra un aviso informativo sin necesitar un servidor.
-  void _recuperarContrasena() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Recuperación de contraseña no disponible en esta demostración.',
-        ),
-      ),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-
-      // Evita que el teclado provoque desbordamientos.
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: ConstrainedBox(
-              // Mantiene un ancho similar al de un teléfono
-              // incluso cuando ejecutamos Flutter en Chrome.
-              constraints: const BoxConstraints(maxWidth: 380),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Ícono principal de la aplicación.
-                    Center(
-                      child: Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
+  Widget build(BuildContext context) => CupertinoPageScaffold(
+    child: SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Form(
+              key: _form,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(child: AcademicIcon(large: true)),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Iniciar Sesión',
+                    textAlign: TextAlign.center,
+                    style: AppTheme.heading,
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Tu aula, en un solo lugar.\nIngresa para gestionar a tus alumnos.',
+                    textAlign: TextAlign.center,
+                    style: AppTheme.caption,
+                  ),
+                  const SizedBox(height: 24),
+                  // La sección agrupa campos y separadores con apariencia nativa iOS.
+                  CupertinoFormSection.insetGrouped(
+                    margin: EdgeInsets.zero,
+                    children: [
+                      CupertinoTextFormFieldRow(
+                        controller: _email,
+                        placeholder: 'Correo electrónico',
+                        prefix: const Icon(
+                          CupertinoIcons.mail,
                           color: AppTheme.primaryColor,
-                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(
-                          Icons.school,
-                          color: Colors.white,
-                          size: 43,
-                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        autocorrect: false,
+                        validator: Validators.email,
                       ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const Text(
-                      'Iniciar Sesión',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textColor,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'Ingresa tus credenciales para\ncontinuar',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                        height: 1.4,
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Campo de correo electrónico.
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                        prefixIcon: Icon(Icons.mail_outline),
-                      ),
-                      validator: (value) {
-                        final email = value?.trim() ?? '';
-
-                        if (email.isEmpty) {
-                          return 'Ingresa tu correo electrónico';
-                        }
-
-                        final emailValido = RegExp(
-                          r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
-                        );
-
-                        if (!emailValido.hasMatch(email)) {
-                          return 'Ingresa un correo válido';
-                        }
-
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Campo de contraseña.
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _iniciarSesion(),
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          tooltip: _obscurePassword
-                              ? 'Mostrar contraseña'
-                              : 'Ocultar contraseña',
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
+                      CupertinoTextFormFieldRow(
+                        controller: _password,
+                        placeholder: 'Contraseña',
+                        prefix: CupertinoButton(
+                          padding: const EdgeInsets.all(8),
+                          onPressed: () => setState(() => _hidden = !_hidden),
+                          child: Semantics(
+                            label: _hidden
+                                ? 'Mostrar contraseña'
+                                : 'Ocultar contraseña',
+                            child: Icon(
+                              _hidden
+                                  ? CupertinoIcons.eye
+                                  : CupertinoIcons.eye_slash,
+                              size: 22,
+                            ),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
                         ),
+                        obscureText: _hidden,
+                        autocorrect: false,
+                        enableSuggestions: false,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => _login(),
+                        validator: Validators.password,
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Ingresa tu contraseña';
-                        }
-
-                        if (value.length < 6) {
-                          return 'Debe tener al menos 6 caracteres';
-                        }
-
-                        return null;
-                      },
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  CupertinoButton.filled(
+                    onPressed: _login,
+                    child: const Text('Iniciar sesión'),
+                  ),
+                  CupertinoButton(
+                    onPressed: () => showNotice(
+                      context,
+                      'Recuperar contraseña',
+                      'La recuperación no está disponible en esta demostración. El inicio de sesión es simulado.',
                     ),
-
-                    const SizedBox(height: 24),
-
-                    // Botón principal de inicio de sesión.
-                    ElevatedButton(
-                      onPressed: _iniciarSesion,
-                      child: const Text('LOGIN'),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // Opción informativa de recuperación.
-                    TextButton(
-                      onPressed: _recuperarContrasena,
-                      child: const Text(
-                        '¿Olvidaste tu contraseña?',
-                        style: TextStyle(color: Colors.black54, fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
+                    child: const Text('¿Olvidaste tu contraseña?'),
+                  ),
+                  const Text(
+                    'GESTIÓN DE ALUMNOS',
+                    textAlign: TextAlign.center,
+                    style: AppTheme.caption,
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
