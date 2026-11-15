@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'screens/login_screen.dart';
 import 'screens/menu_screen.dart';
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return CupertinoApp(
       title: 'Gestión de Alumnos',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
@@ -35,26 +35,6 @@ class MyApp extends StatelessWidget {
         '/alumnos': (context) => const AlumnosScreen(),
         '/perfil': (context) => const PerfilScreen(),
       },
-    );
-  }
-}
-
-/// Vista temporal para rutas todavía no desarrolladas.
-class PantallaTemporal extends StatelessWidget {
-  final String titulo;
-
-  const PantallaTemporal({super.key, required this.titulo});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(titulo)),
-      body: Center(
-        child: Text(
-          'Pantalla de $titulo en desarrollo',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ),
     );
   }
 }
