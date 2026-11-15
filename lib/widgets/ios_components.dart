@@ -44,7 +44,7 @@ class IosPage extends StatelessWidget {
 class AcademicIcon extends StatelessWidget {
   const AcademicIcon({
     super.key,
-    this.icon = CupertinoIcons.person_2_fill,
+    this.icon = CupertinoIcons.book_fill,
     this.large = false,
   });
   final IconData icon;
